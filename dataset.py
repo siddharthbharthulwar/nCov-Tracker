@@ -1,6 +1,8 @@
 import pandas as pd 
 import matplotlib.pyplot as plt 
 from datetime import datetime
+from matplotlib.figure import Figure
+
 
 def datePadding(string):
     if (string[0] == '0'):
@@ -66,7 +68,9 @@ class CovidDataset:
         plt.xlabel("Date")
         plt.show()
 
+    def figure(self):
+
+        fig = Figure()
+        fig.plo
 
 cov = CovidDataset()
-
-cov.plot()
