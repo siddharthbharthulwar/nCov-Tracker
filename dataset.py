@@ -1,5 +1,13 @@
 import pandas as pd 
 import matplotlib.pyplot as plt 
+from datetime import datetime
+
+def datePadding(string):
+    if (string[0] == '0'):
+        return string[1: ]
+    else:
+        return string
+
 
 class CovidDataset:  
     
@@ -20,6 +28,45 @@ class CovidDataset:
 
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
+            
+
+            self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')#.datetime.strftime('%M/%D/%Y')
+            tempDates = self.dateTime.strftime('%m/%e/%y')
+
+            self.dates = []
+            for i in range(len(tempDates)):
+                self.dates.append(datePadding(tempDates[i]).replace(" ", ""))
+
+            self.totalConfirmed = []
+            self.totalDeaths = []
+            self.totalRecovered = []
+            
+            for i in range(len(self.dates)):
+
+                self.totalConfirmed.append(self.confirmedSeries[self.dates[i]].sum())
+                self.totalDeaths.append(self.deathsSeries[self.dates[i]].sum())        
+                self.totalRecovered.append(self.recoveredSeries[self.dates[i]].sum())
+                
+        else:
+
+            print("ERROR: DATASETS ARE NOT ALIGNED")
+
+    def plot(self):
+
+        plt.style.use('ggplot')
+        plt.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
+        plt.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
+        plt.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
+
+        title = "Worldwide 2019 nCov Coverage as of " + self.currentDate
+        plt.title(title)
+        plt.legend(loc="lower right")
+
+        plt.ylabel("Cases")
+        plt.xlabel("Date")
+        plt.show()
+
 
 cov = CovidDataset()
-print(cov.currentDate, cov.firstDate)
+
+cov.plot()
