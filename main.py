@@ -9,7 +9,6 @@ class Interface:
     def __init__(self):
         
         root = tk.Tk()
-        #root.configure(background = "grey17")
         root.title("2019 nCov Tracker")
         root.geometry("600x400")
         #basic setup
@@ -23,7 +22,7 @@ class Interface:
         canvas.get_tk_widget().pack()
         canvas._tkcanvas.pack()
 
-
+    
 
 
         root.mainloop()
