@@ -70,16 +70,20 @@ class CovidDataset:
 
     def figure(self):
 
-        #plt.style.use("dark_background")
+        plt.style.use("ggplot")
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
         ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
         ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
         #a.style.use
+        for i in range(1, len(ax.xaxis.get_ticklabels()) - 1):
 
+            label = ax.xaxis.get_ticklabels()[i]
+            label.set_visible(False)
+        '''
+        for label in ax.xaxis.get_ticklabels()[::3]:
+            label.set_visible(False)
+'''
         ax.legend(loc="upper left")
         return fig
-
-cov = CovidDataset()
-print(cov.currentDate)

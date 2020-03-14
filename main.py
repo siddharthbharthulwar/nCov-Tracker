@@ -10,7 +10,8 @@ class Interface:
         
         root = tk.Tk()
         root.title("2019 nCov Tracker")
-        root.geometry("1000x800")
+        root.geometry("800x480")
+        
         #basic setup
 
         dataset = CovidDataset()
@@ -19,12 +20,8 @@ class Interface:
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
 
-        canvas.get_tk_widget().pack()
-        canvas._tkcanvas.pack()
-
-
-
-
+        canvas.get_tk_widget().pack(side=tk.LEFT)
+        canvas._tkcanvas.pack(side=tk.LEFT)
         root.mainloop()
 
 def main():
