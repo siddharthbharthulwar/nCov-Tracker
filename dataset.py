@@ -78,7 +78,7 @@ class CovidDataset:
         ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
         #a.style.use
 
-        ax.legend(loc="lower right")
+        ax.legend(loc="upper left")
         return fig
 
 cov = CovidDataset()

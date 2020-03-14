@@ -1,4 +1,9 @@
-import tkinter as tk
+import tkinter as tk 
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+from dataset import CovidDataset
+
 
 class Page(tk.Frame):
     def __init__(self, *args, **kwargs):

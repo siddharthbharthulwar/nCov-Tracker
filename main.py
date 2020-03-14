@@ -10,7 +10,7 @@ class Interface:
         
         root = tk.Tk()
         root.title("2019 nCov Tracker")
-        root.geometry("600x400")
+        root.geometry("1000x800")
         #basic setup
 
         dataset = CovidDataset()
@@ -22,7 +22,7 @@ class Interface:
         canvas.get_tk_widget().pack()
         canvas._tkcanvas.pack()
 
-    
+
 
 
         root.mainloop()
