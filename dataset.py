@@ -70,7 +70,16 @@ class CovidDataset:
 
     def figure(self):
 
-        fig = Figure()
-        fig.plo
+        #plt.style.use("dark_background")
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
+        ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
+        ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
+        #a.style.use
+
+        ax.legend(loc="lower right")
+        return fig
 
 cov = CovidDataset()
+print(cov.currentDate)
