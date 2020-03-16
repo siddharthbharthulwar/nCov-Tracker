@@ -61,7 +61,8 @@ class CovidDataset:
                 r = row.tolist()
                 self.regions.append(Region(r[1], r[0], r[4: len(r)]))
                 
-                
+            Uzbekistan = self.regions[447]
+            print(Uzbekistan.regionName)
         else:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")

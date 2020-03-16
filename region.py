@@ -21,6 +21,19 @@ class Region:
 
             self.sets.append((numList[i], self.rowData[i]))
 
+        #MODELS:
+
+        quadraticModel = np.polyfit(numList, self.rowData, 2)
+        polynomialmodel = np.polyfit(numList, self.rowData, 10)
+
+        quad1dim = np.poly1d(quadraticModel)
+        poly1dim = np.poly1d(polynomialmodel)
+        plt.scatter(numList, self.rowData)
+        lin = np.linspace(0, len(self.rowData))
+        plt.plot(lin, quad1dim(lin))
+        plt.title("Quad for: " + self.countryName)
+        plt.show()
+        #END MODELS
         '''
         plt.scatter(numList, self.rowData)
 #        plt.plot(numList, self.coefficient * numList + self.intercept)
