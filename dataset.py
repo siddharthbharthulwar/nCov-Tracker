@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from datetime import datetime
 from matplotlib.figure import Figure
-import pycountry_convert as pc
+from region import Region
 
 def datePadding(string):
     if (string[0] == '0'):
@@ -53,15 +53,14 @@ class CovidDataset:
                 self.totalDeaths.append(self.deathsSeries[self.dates[i]].sum())        
                 self.totalRecovered.append(self.recoveredSeries[self.dates[i]].sum())
 
-            self.countries = []
+
             self.regions = []
-
-            for i in range(0, len(self.confirmedSeries['Country/Region'])):
-                self.countries.append(self.confirmedSeries['Country/Region'][i])
-                self.regions.append(self.confirmedSeries['Province/State'][i])
-
-            self.dropdownCountries = list(dict.fromkeys(self.countries))
-            print(self.countries)
+            #print(self.confirmedSeries.loc[0:1, 1])
+            
+            for index, row in self.confirmedSeries.iterrows():
+                r = row.tolist()
+                self.regions.append(Region(r[1], r[0], r[4: len(r)]))
+                
                 
         else:
 
@@ -100,3 +99,5 @@ class CovidDataset:
 
         ax.legend(loc="upper left")
         return fig
+
+    
