@@ -23,7 +23,10 @@ class Interface:
         #basic setup
 
         dataset = CovidDataset()
-        dataset.prediction(14)
+        for region in dataset.regions:
+            if (region.countryName == "China"):
+
+                region.logisticModel()
         
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
@@ -35,8 +38,6 @@ class Interface:
         totalCaseDisplay = tk.Label(root, text = "Total Cases: " + str(dataset.totalConfirmed[-1])).grid(column = 2, row = 2)
         totalDeathDisplay = tk.Label(root, text = "Total Deaths: " + str(dataset.totalDeaths[-1])).grid(column = 2, row = 3)
         totalRecoveredDisplay = tk.Label(root, text = "Total Recovered: " + str(dataset.totalRecovered[-1])).grid(column = 2, row = 4)
-
-        print(dataset.totalConfirmed[-1])
 
         #mainloop for gui => DO NOT TOUCH
         root.mainloop()

@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import sklearn
 import math
 from Regression.exponential import exponential
+from Regression.logistic import logistic
+from Regression.logisticDistribution import logisticDistribution
 from scipy import optimize
 
 class Region:  
@@ -65,17 +67,17 @@ class Region:
         self.lins = np.linspace(0, len(self.rowData) + days, 100)
         self.vals = exponential(self.lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])
 
-        '''
+    def logisticModel(self):
+
+        popt_logistic, pcov_logistic = optimize.curve_fit(logistic, self.numList,
+        self.rowData, bounds = ((0, 0, 0), (1000000, 500, 1)))
+
+        lins = np.linspace(0, len(self.rowData), 100)
+        vals = logistic(lins, popt_logistic[0], popt_logistic[1], popt_logistic[2])
+
         plt.scatter(self.numList, self.rowData)
-        plt.plot(self.lins, self.vals)
-        if (self.regionName == " "):
-            plt.title("Prediction for " + self.countryName + " after " + str(days) + " days: " + str(int(vals[-1])))
-
-        else:
-            plt.title("Prediction for "  + self.regionName + ", " + self.countryName + " after" + str(days) + " days:" + str(int(vals[-1])))
-        plt.xlabel("Days Since First Case")
-        plt.ylabel("Confirmed Cases")
+        plt.plot(lins, vals)
+        plt.title("Log for: " + self.countryName)
         plt.show()
-        '''
-
+        print(popt_logistic)
 
