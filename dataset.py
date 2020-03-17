@@ -10,16 +10,14 @@ def datePadding(string):
     else:
         return string
 
-def country_to_continent(country):
-    print("not finished")
-
-
 class CovidDataset:  
     
     # init method or constructor   
     def __init__(self):  
+        self.load()
 
-
+    def load(self):
+        #The data is aggregated from the John's Hopkins CSSE, which is updated daily
         self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
         error_bad_lines=False)
 
@@ -29,14 +27,13 @@ class CovidDataset:
         self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv",
         error_bad_lines=False)
 
-        print(self.confirmedSeries)
         if self.recoveredSeries.columns[-1] == self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
 
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
             
 
-            self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')#.datetime.strftime('%M/%D/%Y')
+            self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
             tempDates = self.dateTime.strftime('%m/%e/%y')
 
             self.dates = []
@@ -47,7 +44,7 @@ class CovidDataset:
             self.totalDeaths = []
             self.totalRecovered = []
             
-            for i in range(len(self.dates)):
+            for i in range(0, len(self.dates)):
 
                 self.totalConfirmed.append(self.confirmedSeries[self.dates[i]].sum())
                 self.totalDeaths.append(self.deathsSeries[self.dates[i]].sum())        

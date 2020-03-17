@@ -24,12 +24,7 @@ class Interface:
 
         dataset = CovidDataset()
         dataset.prediction(0)
-        '''
-        for region in dataset.regions:
-            if (region.countryName == "US"):
 
-                region.predi
-        '''
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
 
