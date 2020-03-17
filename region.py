@@ -2,10 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import sklearn
 import math
-from Regression.exponential import exponential
-from Regression.logistic import logistic
-from Regression.logisticDistribution import logisticDistribution
+from Regression.functions import exponential, logistic, logisticDistribution
 from scipy import optimize
+from scipy import misc
 
 class Region:  
     

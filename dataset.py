@@ -109,7 +109,7 @@ class CovidDataset:
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 50 and  region.countryName == "US"): #excluding china due to anomalous regression
+            if (region.totalCases > 50 and region.countryName == "US"): #excluding china due to anomalous regression
 
                 region.exponentialPrediction(days)
                 ax.scatter(region.numList, region.rowData)

@@ -23,11 +23,13 @@ class Interface:
         #basic setup
 
         dataset = CovidDataset()
+        dataset.prediction(0)
+        '''
         for region in dataset.regions:
-            if (region.countryName == "China"):
+            if (region.countryName == "US"):
 
-                region.logisticModel()
-        
+                region.predi
+        '''
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
 

@@ -1,5 +1,11 @@
 import numpy as np 
-import matplotlib.pyplot as plt 
+
+def logistic(x, a, b, r):
+
+    return a / (1 + (b * np.exp(-1 * r * x)))
+
+def exponential(x, a, k, b):
+    return a*np.exp(x*k) + b
 
 def logisticDistribution(x, a, b, r):
 
