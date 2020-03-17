@@ -1,7 +1,6 @@
 # nCov-Tracker
 
-Really simple and small program using Johns Hopkins' live COVID-19 dataset.  
-
+Mathematical and statistical toolkit for tracking and monitoring the 2020 outbreak of COVID-19. Current functions include exponential and logistic regression for all regions, as well as future forecasting based on minimizing cost functions. 
 
 TODO:
 - Actually fix interface
