@@ -57,6 +57,7 @@ class CovidDataset:
             self.regions = []
             #print(self.confirmedSeries.loc[0:1, 1])
             
+
             for index, row in self.confirmedSeries.iterrows():
                 r = row.tolist()
                 self.regions.append(Region(r[1], r[0], r[4: len(r)]))
@@ -100,5 +101,25 @@ class CovidDataset:
 
         ax.legend(loc="upper left")
         return fig
+    
+    def prediction(self, days):
+
+        plt.style.use("ggplot")
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        for i in range(0, len(self.regions)):
+            region = self.regions[i]
+
+            if (region.totalCases > 50 and not region.countryName == "China"): #excluding china due to anomalous regression
+
+                region.exponentialPrediction(days)
+                ax.scatter(region.numList, region.rowData)
+                ax.plot(region.lins, region.vals, label = region.countryName + " with " 
+                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+                print(region.countryName + " with " 
+                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+        ax.legend(loc="upper left")
+        plt.show()
 
     
