@@ -111,13 +111,13 @@ class CovidDataset:
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 50 and not region.countryName == "China"): #excluding china due to anomalous regression
+            if (region.totalCases > 50 and  region.countryName == "US"): #excluding china due to anomalous regression
 
                 region.exponentialPrediction(days)
                 ax.scatter(region.numList, region.rowData)
-                ax.plot(region.lins, region.vals, label = region.countryName + " with " 
+                ax.plot(region.lins, region.vals, label = region.regionName + " with " 
                     + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
-                print(region.countryName + " with " 
+                print(region.regionName + " with " 
                     + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
         ax.legend(loc="upper left")
         plt.show()

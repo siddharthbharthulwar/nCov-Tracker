@@ -23,7 +23,7 @@ class Interface:
         #basic setup
 
         dataset = CovidDataset()
-        dataset.prediction(4)
+        dataset.prediction(14)
         
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
