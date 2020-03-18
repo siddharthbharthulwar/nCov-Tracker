@@ -63,7 +63,7 @@ class CovidDataset:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
 
-    def figure(self):
+    def figure(self, days):
 
         plt.style.use("ggplot")
         fig = plt.figure()
@@ -71,23 +71,15 @@ class CovidDataset:
         ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
         ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
         ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
-        '''
-        for i in range(0, len(ax.xaxis.get_ticklabels()) - 1):
-            ax.xaxis.get_ticklabels()[i].set_visible(False)
-        '''
+
         
         for label in ax.xaxis.get_ticklabels()[::1]:
             label.set_visible(False)
 
         ax.legend(loc="upper left")
+        ax.set_title(str(self.totalConfirmed[-1]) + " cases, " + str(self.totalDeaths[-1]) + " deaths, and " + str(self.totalRecovered[-1]) + 
+        " recovered cases as of " + self.currentDate, fontsize = 12)
         return fig
-    
-    def worldwidePredictionFigure(self, days):
-
-        plt.style.use("ggplot")
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
     
     def prediction(self, days):
 
@@ -98,19 +90,19 @@ class CovidDataset:
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 1500 and not region.countryName == "China"): #excluding china due to anomalous regression
+            if (region.totalCases > 100 and  region.countryName == "US"): #excluding china due to anomalous regression
 
                 region.exponentialPrediction(days - 1)
                 if (region.r_squared_exponential > 0.95):
                     ax.scatter(region.numList, region.rowData)
-                    ax.plot(region.lins, region.vals, label = region.countryName + " with " 
+                    ax.plot(region.lins, region.vals, label = region.regionName + " with " 
                         + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                        + str(region.r_squared_exponential))
-                    print(region.countryName + " with " 
+                        + str(round(region.r_squared_exponential, 3)))
+                    print(region.regionName + " with " 
                         + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
                     USSum += int(region.vals[len(region.vals) - 1])
         ax.legend(loc="upper left")
-        print(USSum, " cases in the US")
-        plt.show()
+        ax.set_title("Cases Within the United States", fontsize = 12)
+        return fig
 
     

@@ -24,16 +24,16 @@ class Interface:
         #basic setup
 
         dataset = CovidDataset()
-        for region in dataset.regions:
-
-            if (region.countryName == "China" or region.countryName == "Korea, South"):
-                region.logisticModel()
-
-        canvas = FigureCanvasTkAgg(dataset.figure(), root)
+        canvas = FigureCanvasTkAgg(dataset.figure(1), root)
+        canvas2 = FigureCanvasTkAgg(dataset.prediction(1), root)
         canvas.draw()
+        canvas2.draw()
 
         canvas.get_tk_widget().grid(column = 1, row = 1)
         canvas._tkcanvas.grid(column = 1, row = 1)
+
+        canvas2.get_tk_widget().grid(column = 1, row = 2)
+        canvas2._tkcanvas.grid(column = 1, row = 2)
 
         caseUpdateDisplay = tk.Label(root, text = "Last Updated: " + dataset.currentDate).grid(column = 2, row = 1)
         totalCaseDisplay = tk.Label(root, text = "Total Cases: " + str(dataset.totalConfirmed[-1])).grid(column = 2, row = 2)

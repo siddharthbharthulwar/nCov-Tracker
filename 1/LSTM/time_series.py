@@ -100,7 +100,6 @@ TRAIN_SPLIT = 300000
 
 """Setting seed to ensure reproducibility."""
 
-tf.random.set_seed(13)
 
 """## Part 1: Forecast a univariate time series
 First, you will train a model using only a single feature (temperature), and use it to make predictions for that value in the future.
