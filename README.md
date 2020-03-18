@@ -5,4 +5,5 @@ Mathematical and statistical toolkit for tracking and monitoring the 2020 outbre
 TODO:
 - Fix Interface
 - Add Shifting Weight Tracking for better predictions
+- Train and implement LTSM Deep Learning Models for Dynamic Weights
 - Build to exe
