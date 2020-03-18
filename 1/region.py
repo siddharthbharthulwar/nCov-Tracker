@@ -82,9 +82,17 @@ class Region:
         lins = np.linspace(0, len(self.rowData), 100)
         vals = logistic(lins, popt_logistic[0], popt_logistic[1], popt_logistic[2])
 
+        nums = range(0, len(self.rowData))
+        numVals = logistic(nums, popt_logistic[0], popt_logistic[1], popt_logistic[2])
+
+
+        self.r_squared_logistic = r2_score(self.rowData, numVals)
         plt.scatter(self.numList, self.rowData)
         plt.plot(lins, vals)
-        plt.title("Log for: " + self.countryName)
+        if (type(self.regionName) == str):
+            plt.title("Log for: " + self.regionName + ", " + self.countryName + " w/ r2 = " + str(self.r_squared_logistic))
+        else:
+            plt.title("Log for: " + self.countryName + "w/ r2  = " + self.r_squared_logistic)
         plt.show()
         print(popt_logistic)
 

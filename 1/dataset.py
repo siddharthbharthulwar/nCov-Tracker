@@ -20,7 +20,6 @@ class CovidDataset:
         #The data is aggregated from the John's Hopkins CSSE, which is updated daily
         self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
         error_bad_lines=False)
-
         self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv",
         error_bad_lines=False)
 
@@ -32,7 +31,8 @@ class CovidDataset:
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
             
-
+            self.confirmedSeries.sort_values(by=self.currentDate, ascending=False)
+            print(self.confirmedSeries)
             self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
             tempDates = self.dateTime.strftime('%m/%e/%y')
 
@@ -98,16 +98,17 @@ class CovidDataset:
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 0 and region.countryName == "US"): #excluding china due to anomalous regression
+            if (region.totalCases > 1500 and not region.countryName == "China"): #excluding china due to anomalous regression
 
                 region.exponentialPrediction(days - 1)
-                ax.scatter(region.numList, region.rowData)
-                ax.plot(region.lins, region.vals, label = region.regionName + " with " 
-                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                    + str(region.r_squared_exponential))
-                print(region.regionName + " with " 
-                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
-                USSum += int(region.vals[len(region.vals) - 1])
+                if (region.r_squared_exponential > 0.95):
+                    ax.scatter(region.numList, region.rowData)
+                    ax.plot(region.lins, region.vals, label = region.countryName + " with " 
+                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
+                        + str(region.r_squared_exponential))
+                    print(region.countryName + " with " 
+                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+                    USSum += int(region.vals[len(region.vals) - 1])
         ax.legend(loc="upper left")
         print(USSum, " cases in the US")
         plt.show()

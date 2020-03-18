@@ -11,6 +11,7 @@ class Interface:
 
     def __init__(self):
         
+        
         root = tk.Tk()
         root.title("2019 nCov Tracker")
         root.geometry("700x700")
@@ -23,7 +24,10 @@ class Interface:
         #basic setup
 
         dataset = CovidDataset()
-        dataset.prediction(1)
+        for region in dataset.regions:
+
+            if (region.countryName == "China" or region.countryName == "Korea, South"):
+                region.logisticModel()
 
         canvas = FigureCanvasTkAgg(dataset.figure(), root)
         canvas.draw()
