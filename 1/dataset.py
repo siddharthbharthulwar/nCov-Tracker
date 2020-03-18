@@ -63,21 +63,6 @@ class CovidDataset:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
 
-    def plot(self):
-
-        plt.style.use('ggplot')
-        plt.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
-        plt.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
-        plt.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
-
-        title = "Worldwide 2019 nCov Coverage as of " + self.currentDate
-        plt.title(title)
-        plt.legend(loc="lower right")
-
-        plt.ylabel("Cases")
-        plt.xlabel("Date")
-        plt.show()
-
     def figure(self):
 
         plt.style.use("ggplot")
@@ -97,24 +82,34 @@ class CovidDataset:
         ax.legend(loc="upper left")
         return fig
     
-    def prediction(self, days):
+    def worldwidePredictionFigure(self, days):
 
         plt.style.use("ggplot")
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
+    
+    def prediction(self, days):
+
+        plt.style.use("ggplot")
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        USSum = 0
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 50 and region.countryName == "US"): #excluding china due to anomalous regression
+            if (region.totalCases > 0 and region.countryName == "US"): #excluding china due to anomalous regression
 
-                region.exponentialPrediction(days)
+                region.exponentialPrediction(days - 1)
                 ax.scatter(region.numList, region.rowData)
                 ax.plot(region.lins, region.vals, label = region.regionName + " with " 
-                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
+                    + str(region.r_squared_exponential))
                 print(region.regionName + " with " 
                     + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+                USSum += int(region.vals[len(region.vals) - 1])
         ax.legend(loc="upper left")
+        print(USSum, " cases in the US")
         plt.show()
 
     

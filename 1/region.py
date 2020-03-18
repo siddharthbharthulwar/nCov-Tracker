@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import sklearn
 import math
 from Regression.functions import exponential, logistic, logisticDistribution
+from Regression.metrics import r_squared
 from scipy import optimize
 from scipy import misc
+from sklearn.metrics import r2_score
 
 class Region:  
     
@@ -47,6 +49,7 @@ class Region:
         lins = np.linspace(0, len(self.rowData), 100)
         vals = exponential(lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])
 
+
         plt.scatter(self.numList, self.rowData)
         plt.plot(lins, vals)
         if (self.regionName == " "):
@@ -65,6 +68,11 @@ class Region:
 
         self.lins = np.linspace(0, len(self.rowData) + days, 100)
         self.vals = exponential(self.lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])
+
+        nums = range(0, len(self.rowData))
+        numVals = exponential(nums, popt_exponential[0], popt_exponential[1], popt_exponential[2])
+        
+        self.r_squared_exponential = r2_score(self.rowData, numVals)
 
     def logisticModel(self):
 
