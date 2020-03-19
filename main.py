@@ -14,7 +14,9 @@ class Interface:
         
         root = tk.Tk()
         root.title("2019 nCov Tracker")
-        root.geometry("700x700")
+        w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+        root.geometry("%dx%d+0+0" % (w, h))
+        root.state("zoomed")
         root.configure(bg='white')
         root.columnconfigure(1, weight = 8)
         root.columnconfigure(2, weight = 2)
@@ -26,6 +28,10 @@ class Interface:
         dataset = CovidDataset()
         canvas = FigureCanvasTkAgg(dataset.figure(1), root)
         canvas2 = FigureCanvasTkAgg(dataset.prediction(1), root)
+        canvas3 = FigureCanvasTkAgg(dataset.figure(1), root)
+
+        canvas4 = FigureCanvasTkAgg(dataset.figure(1), root)
+
         canvas.draw()
         canvas2.draw()
 
@@ -34,6 +40,14 @@ class Interface:
 
         canvas2.get_tk_widget().grid(column = 1, row = 2)
         canvas2._tkcanvas.grid(column = 1, row = 2)
+
+        
+        canvas3.get_tk_widget().grid(column = 2, row = 1)
+        canvas3._tkcanvas.grid(column = 2, row = 1)
+
+        
+        canvas4.get_tk_widget().grid(column = 2, row = 2)
+        canvas4._tkcanvas.grid(column = 2, row = 2)
 
         caseUpdateDisplay = tk.Label(root, text = "Last Updated: " + dataset.currentDate).grid(column = 2, row = 1)
         totalCaseDisplay = tk.Label(root, text = "Total Cases: " + str(dataset.totalConfirmed[-1])).grid(column = 2, row = 2)
