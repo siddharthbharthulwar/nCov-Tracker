@@ -27,7 +27,7 @@ class Interface:
 
         dataset = CovidDataset()
         canvas = FigureCanvasTkAgg(dataset.figure(1), root)
-        canvas2 = FigureCanvasTkAgg(dataset.prediction(1), root)
+        canvas2 = FigureCanvasTkAgg(dataset.USPrediction(1), root)
         canvas3 = FigureCanvasTkAgg(dataset.figure(1), root)
 
         canvas4 = FigureCanvasTkAgg(dataset.figure(1), root)
@@ -48,11 +48,6 @@ class Interface:
         
         canvas4.get_tk_widget().grid(column = 2, row = 2)
         canvas4._tkcanvas.grid(column = 2, row = 2)
-
-        caseUpdateDisplay = tk.Label(root, text = "Last Updated: " + dataset.currentDate).grid(column = 2, row = 1)
-        totalCaseDisplay = tk.Label(root, text = "Total Cases: " + str(dataset.totalConfirmed[-1])).grid(column = 2, row = 2)
-        totalDeathDisplay = tk.Label(root, text = "Total Deaths: " + str(dataset.totalDeaths[-1])).grid(column = 2, row = 3)
-        totalRecoveredDisplay = tk.Label(root, text = "Total Recovered: " + str(dataset.totalRecovered[-1])).grid(column = 2, row = 4)
 
         #mainloop for gui => DO NOT TOUCH
         root.mainloop()

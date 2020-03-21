@@ -8,6 +8,14 @@ from scipy import optimize
 from scipy import misc
 from sklearn.metrics import r2_score
 
+def square(array):
+
+    ret = []
+    for item in array:
+        ret.append((item ** 3) + 1)
+    return ret
+
+
 class Region:  
     
     # init method or constructor   
@@ -33,6 +41,15 @@ class Region:
 
             #self.exponentialModel()
             self.exponentialPrediction(2)
+
+    def addDeaths(self, deaths):
+
+        self.deaths = deaths
+
+    def addRecovered(self, recovered):
+
+        self.recovered = recovered
+    
     def quadraticModel(self):
         quadraticModel = np.polyfit(numList, self.rowData, 2)
 
@@ -59,12 +76,11 @@ class Region:
             plt.title("Exp for: " + self.regionName + ", " + self.countryName)
 
         plt.show()
-        print(popt_exponential)
 
     def exponentialPrediction(self, days):
 
         popt_exponential, pcov_exponential = optimize.curve_fit(exponential, self.numList, 
-        self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)))
+        self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)), sigma=square(self.numList))
 
         self.lins = np.linspace(0, len(self.rowData) + days, 100)
         self.vals = exponential(self.lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])

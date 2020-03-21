@@ -51,14 +51,20 @@ class CovidDataset:
                 self.totalRecovered.append(self.recoveredSeries[self.dates[i]].sum())
 
 
-            self.regions = []
-            #print(self.confirmedSeries.loc[0:1, 1])
-            
+            self.regions = []            
 
             for index, row in self.confirmedSeries.iterrows():
                 r = row.tolist()
                 self.regions.append(Region(r[1], r[0], r[4: len(r)]))
-                
+
+            for index, row in self.deathsSeries.iterrows():
+                r = row.tolist()
+                self.regions[index].addDeaths(r)
+
+            for index, row in self.recoveredSeries.iterrows():
+                r = row.tolist()
+                self.regions[index].addRecovered(r)
+
         else:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
@@ -81,7 +87,7 @@ class CovidDataset:
         " recovered cases as of " + self.currentDate, fontsize = 12)
         return fig
     
-    def prediction(self, days):
+    def USPrediction(self, days):
 
         plt.style.use("ggplot")
         fig = plt.figure()
@@ -90,10 +96,34 @@ class CovidDataset:
         for i in range(0, len(self.regions)):
             region = self.regions[i]
 
-            if (region.totalCases > 100 and  region.countryName == "US"): #excluding china due to anomalous regression
+            if (region.totalCases > 300 and  region.countryName == "US"): #excluding china due to anomalous regression
 
                 region.exponentialPrediction(days - 1)
-                if (region.r_squared_exponential > 0.95):
+                if (region.r_squared_exponential > 0.9):
+                    ax.scatter(region.numList, region.rowData)
+                    ax.plot(region.lins, region.vals, label = region.regionName + " with " 
+                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
+                        + str(round(region.r_squared_exponential, 3)))
+                    print(region.regionName + " with " 
+                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
+                    USSum += int(region.vals[len(region.vals) - 1])
+        ax.legend(loc="upper left")
+        ax.set_title("Cases Within the United States", fontsize = 12)
+        return fig
+
+    def WorldPrediction(self, days):
+
+        plt.style.use("ggplot")
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        USSum = 0
+        for i in range(0, len(self.regions)):
+            region = self.regions[i]
+
+            if (region.totalCases > 300 and not region.countryName == "China"): #excluding china due to anomalous regression
+
+                region.exponentialPrediction(days - 1)
+                if (region.r_squared_exponential > 0.93):
                     ax.scatter(region.numList, region.rowData)
                     ax.plot(region.lins, region.vals, label = region.regionName + " with " 
                         + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
