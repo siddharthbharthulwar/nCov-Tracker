@@ -113,26 +113,56 @@ class CovidDataset:
 
     def WorldPrediction(self, days):
 
-        plt.style.use("ggplot")
+        plt.style.use('ggplot')
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
-        USSum = 0
+        US = 0
+        China = 0
+        Canada = 0
+        Australia = 0
+
+
         for i in range(0, len(self.regions)):
+
             region = self.regions[i]
 
-            if (region.totalCases > 300 and not region.countryName == "China"): #excluding china due to anomalous regression
+            if (region.totalCases > 300):
 
-                region.exponentialPrediction(days - 1)
-                if (region.r_squared_exponential > 0.93):
+                if (type(region[0]) == str):
+
+                    if (region[1] == 'US'):
+
+                        US += region.vals[len(region.vals) - 1]
+
+                    elif (region[1] == 'China'):
+
+                        China += region.vals[len(region.vals) - 1]
+
+                    elif (region[1] == 'Canada'):
+
+                        Canada += region.vals[len(region.vals) - 1]
+
+                    elif (region[1] == 'Australia'):
+
+                        Australia += region.vals[len(region.vals) - 1]
+
+                else:
+
                     ax.scatter(region.numList, region.rowData)
-                    ax.plot(region.lins, region.vals, label = region.regionName + " with " 
-                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                        + str(round(region.r_squared_exponential, 3)))
-                    print(region.regionName + " with " 
-                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
-                    USSum += int(region.vals[len(region.vals) - 1])
-        ax.legend(loc="upper left")
-        ax.set_title("Cases Within the United States", fontsize = 12)
-        return fig
+                    if days == 0:
+
+                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
+                            + str(int(region.vals[len(region.vals) - 1])) + " cases today, r2 = " 
+                            + str(round(region.r_squared_exponential, 3)))              
+                    elif days == 1:
+
+                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
+                            + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " day,r2 = " 
+                            + str(round(region.r_squared_exponential, 3)))
+                    else:
+
+                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
+                            + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
+                            + str(round(region.r_squared_exponential, 3)))
 
     
