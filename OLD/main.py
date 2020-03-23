@@ -27,19 +27,19 @@ class Interface:
 
         dataset = CovidDataset()
         canvas = FigureCanvasTkAgg(dataset.figure(1), root)
-        canvas2 = FigureCanvasTkAgg(dataset.USPrediction(1), root)
+        #canvas2 = FigureCanvasTkAgg(dataset.USPrediction(1), root)
         canvas3 = FigureCanvasTkAgg(dataset.figure(1), root)
 
         canvas4 = FigureCanvasTkAgg(dataset.figure(1), root)
 
         canvas.draw()
-        canvas2.draw()
+        #canvas2.draw()
 
         canvas.get_tk_widget().grid(column = 1, row = 1)
         canvas._tkcanvas.grid(column = 1, row = 1)
 
-        canvas2.get_tk_widget().grid(column = 1, row = 2)
-        canvas2._tkcanvas.grid(column = 1, row = 2)
+       # canvas2.get_tk_widget().grid(column = 1, row = 2)
+        #canvas2._tkcanvas.grid(column = 1, row = 2)
 
         
         canvas3.get_tk_widget().grid(column = 2, row = 1)
