@@ -30,6 +30,9 @@ class Region:
         self.totalCases = self.rowData[-1]
         self.numList = range(0, len(self.rowData))
 
+        self.exponentialModel()
+        #self.logisticModel()
+
     def addDeaths(self, deaths):
 
         self.deaths = deaths
@@ -57,7 +60,8 @@ class Region:
 
         self.r_squared_logistic = r2_score(self.rowData, numVals)
 
-    def exponentialPredicton(self, days):
+    def exponentialPrediction(self, days):
+
 
         lins = np.linspace(0, len(self.rowData) + days, 100)
 
@@ -74,5 +78,5 @@ class Region:
         self.logisticModel[1], self.logisticModel[2])
 
         self.logisticFinalPopulation = int(self.vals[-1])
-        
+
 

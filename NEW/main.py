@@ -20,6 +20,11 @@ class Interface:
 
         dataset = CovidDataset()
 
+        canvas = FigureCanvasTkAgg(dataset.currentWorldFigure(), root)
+        canvas.get_tk_widget().grid(column = 1, row = 1)
+        
+        canvas2 = FigureCanvasTkAgg(dataset.USPrediction(4), root)
+        canvas2.get_tk_widget().grid(column = 1, row = 2)
         root.mainloop()
 
 
