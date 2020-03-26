@@ -2,7 +2,7 @@
 
 Mathematical and statistical toolkit for tracking and monitoring the 2020 outbreak of COVID-19. Current functions include exponential and logistic regression for all regions, as well as future forecasting based on minimizing cost functions. Implementations of the SIR epidemological model and an LSTM-based RNN for enhanced feature tracking are underway. 
 
-Currently I'm writing this for researchers in Porto, but feel free to use this for future predictions. Note that the JHU dataset is updated at 6 PM MST (+/- a few minutes), but may only reflect the previous day's data. 
+Currently I'm writing this for researchers in Porto, but feel free to use this for future predictions. Note that the JHU dataset is updated at 6 PM MST (+/- a few minutes), but may only reflect the previous day's data. As of 3/26/2020, the system is not functional since JHU has changed the data structure for their time series. Should be fixed soon. 
 
 Dependencies:
 - NumPy
