@@ -20,15 +20,15 @@ class CovidDataset:
 
     def load(self):
         #The data is aggregated from the John's Hopkins CSSE, which is updated daily
-        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
         error_bad_lines=False)
-        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv",
-        error_bad_lines=False)
-
-        self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv",
+        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
         error_bad_lines=False)
 
-        if self.recoveredSeries.columns[-1] == self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
+        self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv",
+        error_bad_lines=False)
+
+        if self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
 
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
@@ -141,15 +141,10 @@ class CovidDataset:
                 ax.scatter(region.numList, region.rowData)
                 ax.plot(lins, region.vals, label = region.regionName + " with " 
                     + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                    + str(round(region.r_squared_exponential, 3)))
+                    + str(round(region.r_squared_exponential, 3))
+                    )
                 usSum += int(region.vals[len(region.vals) - 1])
 
         ax.legend(loc="upper left")
         ax.set_title("Cases Within the United States: " + str(usSum))
         return fig
-                
-
-            
-        
-    #def refresh(self, days):
-
