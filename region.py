@@ -63,18 +63,18 @@ class Region:
     def exponentialPrediction(self, days):
 
 
-        lins = np.linspace(0, len(self.rowData) + days, 100)
+        self.lins = np.linspace(0, len(self.rowData) + days, 100)
 
-        self.vals = exponential(lins, self.popt_exponential[0], 
+        self.vals = exponential(self.lins, self.popt_exponential[0], 
         self.popt_exponential[1], self.popt_exponential[2])
 
         self.exponentialFinalPopulation = int(self.vals[-1])
 
     def logisticPrediction(self, days):
 
-        lins = np.linspace(0, len(self.rowData) + days, 100)
+        self.lins = np.linspace(0, len(self.rowData) + days, 100)
 
-        self.vals = logistic(lins, self.logisticModel[0], 
+        self.vals = logistic(self.lins, self.logisticModel[0], 
         self.logisticModel[1], self.logisticModel[2])
 
         self.logisticFinalPopulation = int(self.vals[-1])

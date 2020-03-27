@@ -19,7 +19,7 @@ class CovidDataset:
         self.load()
 
     def load(self):
-        #The data is aggregated from the John's Hopkins CSSE, which is updated daily
+        #global data from JHU 
         self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
         error_bad_lines=False)
         self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
@@ -28,6 +28,7 @@ class CovidDataset:
         self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv",
         error_bad_lines=False)
 
+        #Smaller US Data from JHU is in progress right now
         if self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
 
             self.currentDate = self.recoveredSeries.columns[-1]
@@ -100,51 +101,65 @@ class CovidDataset:
         ax = fig.add_subplot(1, 1, 1)
         
         predictions = []
-
+        ChinaSum = 0
         for region in self.regions:
 
-            region.exponentialPrediction(5)
-            predictions.append(region.exponentialFinalPopulation)
+            if not region.countryName == "China":
+                region.exponentialPrediction(5)
+                predictions.append(region.exponentialFinalPopulation)
+            elif region.countryName == "China":
+                ChinaSum += region.rowData[-1]
         
 
-        top_idx = np.argsort(predictions)[-12:]
+        top_idx = sorted(range(len(predictions)), key=lambda k: predictions[k])
+        top_idx.reverse()
+
+        for i in top_idx:
+            if not self.regions[i].countryName == 'China':
+                rgn = self.regions[i]
+                print(rgn.vals[-1])
+        top_idx = top_idx[:12]
+
         
-        for i in range(0, len(self.regions)):
 
-            if i in top_idx:
-                print("not finished yet")
+        for i in top_idx:
 
-    def USPrediction(self, days):
-
-        plt.style.use("ggplot")
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        predictions = []
-        indices = []
-        index = 0
-        for region in self.regions:
-            region.exponentialPrediction(days)
-            predictions.append(region.exponentialFinalPopulation)
-            indices.append(index)
-            index += 1
-
-        top_idx = np.argsort(predictions)
-        usSum = 0
-        numUsed = 0
-        lins = np.linspace(0, len(self.regions[0].rowData) + days, 100) #TODO: set to non-hardcoded value (not 100)
-        for i in range(0, len(top_idx)):
-
-            if self.regions[i].countryName == 'US' and numUsed < 13:
-
-                region = self.regions[i]
-                
-                ax.scatter(region.numList, region.rowData)
-                ax.plot(lins, region.vals, label = region.regionName + " with " 
-                    + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                    + str(round(region.r_squared_exponential, 3))
-                    )
-                usSum += int(region.vals[len(region.vals) - 1])
-
+            region = self.regions[i]
+            print(region.countryName, region.rowData[-1])
+            ax.scatter(region.numList, region.rowData)
+            ax.plot(region.lins, region.vals, label = region.countryName + " with " + 
+            str(int(region.vals[-1])) + " cases in " + str(days) + " days, r2 = " + 
+            str(round(region.r_squared_exponential, 3)))
         ax.legend(loc="upper left")
-        ax.set_title("Cases Within the United States: " + str(usSum))
+        ax.set_title(str(int(sum(predictions))) + " Cases Worldwide in " + str(days) + " days")
         return fig
+
+
+    def worldPredictions2(self, days):
+
+
+        
+        predictions = []
+        let = []
+        ChinaSum = 0
+        for region in self.regions:
+
+            if not region.countryName == "China":
+                region.exponentialPrediction(5)
+                let.append(region.rowData[-1])
+                predictions.append(region.vals[-1])
+            elif region.countryName == "China":
+                ChinaSum += region.rowData[-1]
+        
+
+        print(predictions)
+
+        top_idx = np.argsort(predictions).tolist()
+        top_idx.reverse()
+        
+        newPredictions = []
+
+        for i in range(0, len(top_idx)):
+            newPredictions.append(self.regions[i].rowData[-1])
+
+        print(newPredictions)
