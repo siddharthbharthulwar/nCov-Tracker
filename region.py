@@ -68,6 +68,8 @@ class Region:
         self.vals = exponential(self.lins, self.popt_exponential[0], 
         self.popt_exponential[1], self.popt_exponential[2])
 
+        if (self.countryName == 'Burma'):
+            print('ACTIVATED')
         self.exponentialFinalPopulation = int(self.vals[-1])
 
     def logisticPrediction(self, days):

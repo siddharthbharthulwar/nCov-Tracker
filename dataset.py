@@ -68,6 +68,15 @@ class CovidDataset:
                 r = row.tolist()
                 self.regions[index].addRecovered(r)
 
+            finalValues = []
+
+            for region in self.regions:
+
+                finalValues.append(region.rowData[-1])
+
+            self.indices = sorted(range(len(finalValues)), key=lambda k: finalValues[k])
+            self.indices.reverse()
+
         else:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
@@ -81,85 +90,55 @@ class CovidDataset:
         ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths: " + str(self.totalDeaths[-1]))
         ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered: " + str(self.totalRecovered[-1]))
 
+        index = 0
         for label in ax.xaxis.get_ticklabels():
-            #TODO: actually fix this part
-            label.set_visible(False)
-            '''
-            day = datetime.strptime(label.get_text(), '%m/%e/%y').day
-            if not day == 1:
+            if not index == 0 or not index == len(ax.xaxis.get_ticklabels()) - 1:
                 label.set_visible(False)
-            '''
+            index += 1
+
         ax.legend(loc = "upper left")
         ax.set_title(str(self.totalConfirmed[-1]) + " cases, " + str(self.totalDeaths[-1]) + " deaths, and " + str(self.totalRecovered[-1]) + 
         " recovered cases as of " + self.currentDate, fontsize = 10)
         return fig
 
-    def worldPredictions(self, days):
+    def worldPrediction(self, days):
 
         plt.style.use('ggplot')
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
-        
+
         predictions = []
-        ChinaSum = 0
-        for region in self.regions:
-
-            if not region.countryName == "China":
-                region.exponentialPrediction(5)
-                predictions.append(region.exponentialFinalPopulation)
-            elif region.countryName == "China":
-                ChinaSum += region.rowData[-1]
-        
-
-        top_idx = sorted(range(len(predictions)), key=lambda k: predictions[k])
-        top_idx.reverse()
-
-        for i in top_idx:
-            if not self.regions[i].countryName == 'China':
-                rgn = self.regions[i]
-                print(rgn.vals[-1])
-        top_idx = top_idx[:12]
-
-        
-
-        for i in top_idx:
-
+        countries = []
+        newRegions = []
+        chinaSum = 0
+        for i in range(0, len(self.regions)):
             region = self.regions[i]
-            print(region.countryName, region.rowData[-1])
-            ax.scatter(region.numList, region.rowData)
-            ax.plot(region.lins, region.vals, label = region.countryName + " with " + 
-            str(int(region.vals[-1])) + " cases in " + str(days) + " days, r2 = " + 
-            str(round(region.r_squared_exponential, 3)))
-        ax.legend(loc="upper left")
-        ax.set_title(str(int(sum(predictions))) + " Cases Worldwide in " + str(days) + " days")
-        return fig
 
-
-    def worldPredictions2(self, days):
-
-
-        
-        predictions = []
-        let = []
-        ChinaSum = 0
-        for region in self.regions:
-
-            if not region.countryName == "China":
-                region.exponentialPrediction(5)
-                let.append(region.rowData[-1])
-                predictions.append(region.vals[-1])
+            if region.rowData[-1] > 50 and not region.countryName == "China":
+                
+                newRegions.append(region)
+                region.exponentialPrediction(days)
+                countries.append(region.countryName)
+                predictions.append(region.exponentialFinalPopulation)
+            
             elif region.countryName == "China":
-                ChinaSum += region.rowData[-1]
+
+                chinaSum += region.rowData[-1]
+
+        newIndices = sorted(range(len(predictions)), key=lambda k: predictions[k])
+        newIndices.reverse()
+        newIndices = newIndices[:12]
+
         
+        for index in newIndices:
+            rgn = newRegions[index]
+            ax.scatter(rgn.numList, rgn.rowData)
+            ax.plot(rgn.lins, rgn.vals,  #TODO: change to actual values
+            label = rgn.countryName + " with " + str(rgn.exponentialFinalPopulation) + " cases in " + 
+            str(days) + " days")
 
-        print(predictions)
-
-        top_idx = np.argsort(predictions).tolist()
-        top_idx.reverse()
+        ax.legend(loc = "upper left")
+        ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(days) + " Days")
         
-        newPredictions = []
-
-        for i in range(0, len(top_idx)):
-            newPredictions.append(self.regions[i].rowData[-1])
-
-        print(newPredictions)
+        return fig
+        
