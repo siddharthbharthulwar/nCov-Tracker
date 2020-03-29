@@ -26,6 +26,9 @@ class Interface:
         
         canvas2 = FigureCanvasTkAgg(dataset.worldPrediction(4), root)
         canvas2.get_tk_widget().grid(column = 1, row = 2)
+
+        canvas3 = FigureCanvasTkAgg(dataset.worldDifferential(), root)
+        canvas3.get_tk_widget().grid(column = 2, row = 1)
         
 
         root.mainloop()

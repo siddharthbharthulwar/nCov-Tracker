@@ -29,6 +29,7 @@ class Region:
         self.rowData = rowData
         self.totalCases = self.rowData[-1]
         self.numList = range(0, len(self.rowData))
+        self.differential = np.diff(self.rowData)
 
         self.exponentialModel()
         #self.logisticModel()

@@ -141,4 +141,23 @@ class CovidDataset:
         ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(days) + " Days")
         
         return fig
+
+    def worldDifferential(self):
+
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        for region in self.regions:
+
+            if region.rowData[-1] > 30000:
+                ax.plot(region.rowData[1:], region.differential, 
+                label = region.countryName)
+
+        ax.legend(loc = "upper left")
+        ax.set_title("Exponential/Sigmoidal Differentials for COVID-19")
+        ax.set_xlabel("Total Cases")
+        ax.set_ylabel("New Confirmed Cases (log)")
+        ax.set_yscale("log")
+        return fig
         
