@@ -4,6 +4,8 @@ Mathematical and statistical toolkit for tracking and monitoring the 2020 outbre
 
 Currently I'm writing this for researchers in Porto, but feel free to use this for future predictions. Note that the JHU dataset is updated at 6 PM MST (+/- a few minutes), but may only reflect the previous day's data. As of 3/28/2020, the JHU dataset doesn't include the data from individual states in the US, but this should change soon.
 
+This project is also a submission for the IB Computer Science Standard Level Internal Assessment, so theres's that. 
+
 Dependencies:
 - NumPy
 - Pandas
