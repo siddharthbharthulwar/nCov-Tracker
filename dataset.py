@@ -4,6 +4,7 @@ from datetime import datetime
 from matplotlib.figure import Figure
 from region import Region
 import numpy as np 
+from scipy.signal import savgol_filter
 
 
 def datePadding(string):
@@ -139,7 +140,7 @@ class CovidDataset:
 
         ax.legend(loc = "upper left")
         ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(days) + " Days")
-        
+        ax.set_xlim(left = 30)
         return fig
 
     def worldDifferential(self):
@@ -150,14 +151,60 @@ class CovidDataset:
 
         for region in self.regions:
 
-            if region.rowData[-1] > 30000:
-                ax.plot(region.rowData[1:], region.differential, 
+            if region.rowData[-1] > 15000: 
+                filtered = savgol_filter(region.differential, 15, 2)
+                ax.plot(region.rowData[1: ], filtered, 
                 label = region.countryName)
 
         ax.legend(loc = "upper left")
-        ax.set_title("Exponential/Sigmoidal Differentials for COVID-19")
-        ax.set_xlabel("Total Cases")
+        ax.set_title("Logistic Trajectory of COVID-19")
+        ax.set_xlabel("Total Cases (log)")
         ax.set_ylabel("New Confirmed Cases (log)")
         ax.set_yscale("log")
+        ax.set_xscale("log")
+        ax.set_xlim(left = 1000)
+        ax.set_ylim(bottom = 10)
         return fig
         
+
+class USDataset: #US Time Series Data has a different structure
+
+    def __init__(self):
+        
+        self.load()
+    
+    def load(self):
+
+        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv",
+        error_bad_lines=False)
+        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv",
+        error_bad_lines=False)
+
+
+        start = 'Alabama'
+        self.states = []
+        self.states.append(State('Alabama'))
+
+        for index, row in self.confirmedSeries.iloc[51: ]:
+
+            if row['Province_State'] == start:
+
+                print("yikes")
+
+            else:
+                print("yikes")
+
+
+
+class State:
+
+    def __init__(self, name):
+        
+        self.name = name
+        self.counties = []
+
+    def addCountyConfirmed(self, row):
+
+        self.counties.append(row)
+
+

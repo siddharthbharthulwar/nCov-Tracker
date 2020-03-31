@@ -2,7 +2,7 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
-from dataset import CovidDataset
+from dataset import CovidDataset, USDataset
 
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -19,12 +19,12 @@ class Interface:
         root.configure(bg = "white")
 
         dataset = CovidDataset()
-
+        #usdataset = USDataset()
         canvas = FigureCanvasTkAgg(dataset.currentWorldFigure(), root)
         canvas.get_tk_widget().grid(column = 1, row = 1)
         
         
-        canvas2 = FigureCanvasTkAgg(dataset.worldPrediction(4), root)
+        canvas2 = FigureCanvasTkAgg(dataset.worldPrediction(1), root)
         canvas2.get_tk_widget().grid(column = 1, row = 2)
 
         canvas3 = FigureCanvasTkAgg(dataset.worldDifferential(), root)
