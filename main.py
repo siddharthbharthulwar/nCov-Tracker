@@ -19,7 +19,7 @@ class Interface:
         root.configure(bg = "white")
 
         dataset = CovidDataset()
-        #usdataset = USDataset()
+        usdataset = USDataset()
         canvas = FigureCanvasTkAgg(dataset.currentWorldFigure(), root)
         canvas.get_tk_widget().grid(column = 1, row = 1)
         

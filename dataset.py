@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from region import Region
 import numpy as np 
 from scipy.signal import savgol_filter
+from state import State
 
 
 def datePadding(string):
@@ -36,7 +37,6 @@ class CovidDataset:
             self.firstDate = self.recoveredSeries.columns[4]
             
             self.confirmedSeries.sort_values(by=self.currentDate, ascending=False)
-            print(self.confirmedSeries)
             self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
             tempDates = self.dateTime.strftime('%m/%e/%y')
 
@@ -180,31 +180,53 @@ class USDataset: #US Time Series Data has a different structure
         self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv",
         error_bad_lines=False)
 
-
-        start = 'Alabama'
+        start = None
+        i = -1
         self.states = []
-        self.states.append(State('Alabama'))
 
-        for index, row in self.confirmedSeries.iloc[51: ]:
+        for index, row in self.confirmedSeries.iterrows():
 
-            if row['Province_State'] == start:
+            name = row['Province_State'].replace(" ", "")
 
-                print("yikes")
+            if name == start:
+
+                self.states[i].addConfirmed(row[11: ].tolist())
 
             else:
-                print("yikes")
+
+                i += 1
+                self.states.append(State(name))
+                self.states[i].addConfirmed(row[11: ].tolist())
+                start = name.replace(" ", "")
+
+        i = -1
+
+        for index, row in self.deathsSeries.iterrows():
+
+            name = row['Province_State'].replace(" ", "")
+
+            if name == start:
+
+                self.states[i].addDeaths(row[12: ].tolist())
+
+            else:
+
+                i += 1
+                self.states[i].addDeaths(row[12: ].tolist())
+                start = name.replace(" ", "")
+
+    def prediction(self, days):
+
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        predictions = []
+        states = []
+        newRegions = []
+        chinaSum = []
 
 
 
-class State:
 
-    def __init__(self, name):
-        
-        self.name = name
-        self.counties = []
-
-    def addCountyConfirmed(self, row):
-
-        self.counties.append(row)
-
-
+    
