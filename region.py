@@ -15,7 +15,6 @@ def square(array):
         ret.append((item ** 3) + 1)
     return ret
 
-
 class Region:  
     
     # init method or constructor   
@@ -25,22 +24,15 @@ class Region:
         if type(regionName) == str:
             self.regionName = regionName
         else:
-            self.regionName = " "
+            self.regionName = None
 
-        self.rawRowData = rowData    
         self.rowData = rowData
         self.totalCases = self.rowData[-1]
-        self.sets = []
         self.numList = range(0, len(self.rowData))
-        for i in range(len(self.rowData)):
+        self.differential = np.diff(self.rowData)
 
-            self.sets.append((self.numList[i], self.rowData[i]))
-
-        #MODELS:
-        if (self.rowData[len(self.rowData) - 1] > 1):
-
-            #self.exponentialModel()
-            self.exponentialPrediction(2)
+        self.exponentialModel()
+        #self.logisticModel()
 
     def addDeaths(self, deaths):
 
@@ -49,66 +41,45 @@ class Region:
     def addRecovered(self, recovered):
 
         self.recovered = recovered
-    
-    def quadraticModel(self):
-        quadraticModel = np.polyfit(numList, self.rowData, 2)
 
-        quad1dim = np.poly1d(quadraticModel)
-        plt.scatter(numList, self.rowData)
-        lin = np.linspace(0, len(self.rowData))
-        plt.plot(lin, quad1dim(lin))
-        plt.title("Quad for: " + self.countryName)
-        plt.show()
     def exponentialModel(self):
-        popt_exponential, pcov_exponential = optimize.curve_fit(exponential, self.numList, 
+        self.popt_exponential, self.pcov_exponential = optimize.curve_fit(exponential, self.numList, 
         self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)))
 
-        lins = np.linspace(0, len(self.rowData), 100)
-        vals = exponential(lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])
-
-
-        plt.scatter(self.numList, self.rowData)
-        plt.plot(lins, vals)
-        if (self.regionName == " "):
-            plt.title("Exp for: " + self.countryName)
-
-        else:
-            plt.title("Exp for: " + self.regionName + ", " + self.countryName)
-
-        plt.show()
-
-    def exponentialPrediction(self, days):
-
-        popt_exponential, pcov_exponential = optimize.curve_fit(exponential, self.numList, 
-        self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)), sigma=square(self.numList))
-
-        self.lins = np.linspace(0, len(self.rowData) + days, 100)
-        self.vals = exponential(self.lins, popt_exponential[0], popt_exponential[1], popt_exponential[2])
-
         nums = range(0, len(self.rowData))
-        numVals = exponential(nums, popt_exponential[0], popt_exponential[1], popt_exponential[2])
-        
+        numVals = logistic(nums, self.popt_exponential[0], self.popt_exponential[1], self.popt_exponential[2])
+
         self.r_squared_exponential = r2_score(self.rowData, numVals)
 
     def logisticModel(self):
 
-        popt_logistic, pcov_logistic = optimize.curve_fit(logistic, self.numList,
+        self.popt_logistic, self.pcov_logistic = optimize.curve_fit(logistic, self.numList,
         self.rowData, bounds = ((0, 0, 0), (1000000, 500, 1)))
 
-        lins = np.linspace(0, len(self.rowData), 100)
-        vals = logistic(lins, popt_logistic[0], popt_logistic[1], popt_logistic[2])
-
         nums = range(0, len(self.rowData))
-        numVals = logistic(nums, popt_logistic[0], popt_logistic[1], popt_logistic[2])
-
+        numVals = logistic(nums, self.popt_logistic[0], self.popt_logistic[1], self.popt_logistic[2])
 
         self.r_squared_logistic = r2_score(self.rowData, numVals)
-        plt.scatter(self.numList, self.rowData)
-        plt.plot(lins, vals)
-        if (type(self.regionName) == str):
-            plt.title("Log for: " + self.regionName + ", " + self.countryName + " w/ r2 = " + str(self.r_squared_logistic))
-        else:
-            plt.title("Log for: " + self.countryName + "w/ r2  = " + self.r_squared_logistic)
-        plt.show()
-        print(popt_logistic)
+
+    def exponentialPrediction(self, days):
+
+
+        self.lins = np.linspace(0, len(self.rowData) + days, 100)
+
+        self.vals = exponential(self.lins, self.popt_exponential[0], 
+        self.popt_exponential[1], self.popt_exponential[2])
+
+        if (self.countryName == 'Burma'):
+            print('ACTIVATED')
+        self.exponentialFinalPopulation = int(self.vals[-1])
+
+    def logisticPrediction(self, days):
+
+        self.lins = np.linspace(0, len(self.rowData) + days, 100)
+
+        self.vals = logistic(self.lins, self.logisticModel[0], 
+        self.logisticModel[1], self.logisticModel[2])
+
+        self.logisticFinalPopulation = int(self.vals[-1])
+
 

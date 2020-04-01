@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from matplotlib.figure import Figure
 from region import Region
+import numpy as np 
+from scipy.signal import savgol_filter
+from state import State
+
 
 def datePadding(string):
     if (string[0] == '0'):
@@ -17,22 +21,22 @@ class CovidDataset:
         self.load()
 
     def load(self):
-        #The data is aggregated from the John's Hopkins CSSE, which is updated daily
-        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv",
+        #global data from JHU 
+        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
         error_bad_lines=False)
-        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv",
-        error_bad_lines=False)
-
-        self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv",
+        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
         error_bad_lines=False)
 
-        if self.recoveredSeries.columns[-1] == self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
+        self.recoveredSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv",
+        error_bad_lines=False)
+
+        #Smaller US Data from JHU is in progress right now
+        if self.deathsSeries.columns[-1] == self.confirmedSeries.columns[-1]:
 
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
             
             self.confirmedSeries.sort_values(by=self.currentDate, ascending=False)
-            print(self.confirmedSeries)
             self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
             tempDates = self.dateTime.strftime('%m/%e/%y')
 
@@ -65,104 +69,164 @@ class CovidDataset:
                 r = row.tolist()
                 self.regions[index].addRecovered(r)
 
+            finalValues = []
+
+            for region in self.regions:
+
+                finalValues.append(region.rowData[-1])
+
+            self.indices = sorted(range(len(finalValues)), key=lambda k: finalValues[k])
+            self.indices.reverse()
+
         else:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
 
-    def figure(self, days):
-
-        plt.style.use("ggplot")
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases")
-        ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths")
-        ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered")
-
-        
-        for label in ax.xaxis.get_ticklabels()[::1]:
-            label.set_visible(False)
-
-        ax.legend(loc="upper left")
-        ax.set_title(str(self.totalConfirmed[-1]) + " cases, " + str(self.totalDeaths[-1]) + " deaths, and " + str(self.totalRecovered[-1]) + 
-        " recovered cases as of " + self.currentDate, fontsize = 12)
-        return fig
-    
-    def USPrediction(self, days):
-
-        plt.style.use("ggplot")
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        USSum = 0
-        for i in range(0, len(self.regions)):
-            region = self.regions[i]
-
-            if (region.totalCases > 300 and  region.countryName == "US"): #excluding china due to anomalous regression
-
-                region.exponentialPrediction(days - 1)
-                if (region.r_squared_exponential > 0.9):
-                    ax.scatter(region.numList, region.rowData)
-                    ax.plot(region.lins, region.vals, label = region.regionName + " with " 
-                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                        + str(round(region.r_squared_exponential, 3)))
-                    print(region.regionName + " with " 
-                        + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days")
-                    USSum += int(region.vals[len(region.vals) - 1])
-        ax.legend(loc="upper left")
-        ax.set_title("Cases Within the United States", fontsize = 12)
-        return fig
-
-    def WorldPrediction(self, days):
+    def currentWorldFigure(self):
 
         plt.style.use('ggplot')
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
-        US = 0
-        China = 0
-        Canada = 0
-        Australia = 0
+        ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases: " + str(self.totalConfirmed[-1]))
+        ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths: " + str(self.totalDeaths[-1]))
+        ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered: " + str(self.totalRecovered[-1]))
 
+        index = 0
+        for label in ax.xaxis.get_ticklabels():
+            if not index == 0 or not index == len(ax.xaxis.get_ticklabels()) - 1:
+                label.set_visible(False)
+            index += 1
 
+        ax.legend(loc = "upper left")
+        ax.set_title(str(self.totalConfirmed[-1]) + " cases, " + str(self.totalDeaths[-1]) + " deaths, and " + str(self.totalRecovered[-1]) + 
+        " recovered cases as of " + self.currentDate, fontsize = 10)
+        return fig
+
+    def worldPrediction(self, days):
+
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        predictions = []
+        countries = []
+        newRegions = []
+        chinaSum = 0
         for i in range(0, len(self.regions)):
-
             region = self.regions[i]
 
-            if (region.totalCases > 300):
+            if region.rowData[-1] > 50 and not region.countryName == "China":
+                
+                newRegions.append(region)
+                region.exponentialPrediction(days)
+                countries.append(region.countryName)
+                predictions.append(region.exponentialFinalPopulation)
+            
+            elif region.countryName == "China":
 
-                if (type(region[0]) == str):
+                chinaSum += region.rowData[-1]
 
-                    if (region[1] == 'US'):
+        newIndices = sorted(range(len(predictions)), key=lambda k: predictions[k])
+        newIndices.reverse()
+        newIndices = newIndices[:12]
 
-                        US += region.vals[len(region.vals) - 1]
+        
+        for index in newIndices:
+            rgn = newRegions[index]
+            ax.scatter(rgn.numList, rgn.rowData)
+            ax.plot(rgn.lins, rgn.vals,  #TODO: change to actual values
+            label = rgn.countryName + " with " + str(rgn.exponentialFinalPopulation) + " cases in " + 
+            str(days) + " days")
 
-                    elif (region[1] == 'China'):
+        ax.legend(loc = "upper left")
+        ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(days) + " Days")
+        ax.set_xlim(left = 30)
+        return fig
 
-                        China += region.vals[len(region.vals) - 1]
+    def worldDifferential(self):
 
-                    elif (region[1] == 'Canada'):
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
 
-                        Canada += region.vals[len(region.vals) - 1]
+        for region in self.regions:
 
-                    elif (region[1] == 'Australia'):
+            if region.rowData[-1] > 15000: 
+                filtered = savgol_filter(region.differential, 15, 2)
+                ax.plot(region.rowData[1: ], filtered, 
+                label = region.countryName)
 
-                        Australia += region.vals[len(region.vals) - 1]
+        ax.legend(loc = "upper left")
+        ax.set_title("Logistic Trajectory of COVID-19")
+        ax.set_xlabel("Total Cases (log)")
+        ax.set_ylabel("New Confirmed Cases (log)")
+        ax.set_yscale("log")
+        ax.set_xscale("log")
+        ax.set_xlim(left = 1000)
+        ax.set_ylim(bottom = 10)
+        return fig
+        
 
-                else:
+class USDataset: #US Time Series Data has a different structure
 
-                    ax.scatter(region.numList, region.rowData)
-                    if days == 0:
+    def __init__(self):
+        
+        self.load()
+    
+    def load(self):
 
-                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
-                            + str(int(region.vals[len(region.vals) - 1])) + " cases today, r2 = " 
-                            + str(round(region.r_squared_exponential, 3)))              
-                    elif days == 1:
+        self.confirmedSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv",
+        error_bad_lines=False)
+        self.deathsSeries = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv",
+        error_bad_lines=False)
 
-                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
-                            + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " day,r2 = " 
-                            + str(round(region.r_squared_exponential, 3)))
-                    else:
+        start = None
+        i = -1
+        self.states = []
 
-                        ax.plot(region.lins, region.vals, label = region.countryName + " w/ " 
-                            + str(int(region.vals[len(region.vals) - 1])) + " cases in " + str(days) + " days r2 = " 
-                            + str(round(region.r_squared_exponential, 3)))
+        for index, row in self.confirmedSeries.iterrows():
+
+            name = row['Province_State'].replace(" ", "")
+
+            if name == start:
+
+                self.states[i].addConfirmed(row[11: ].tolist())
+
+            else:
+
+                i += 1
+                self.states.append(State(name))
+                self.states[i].addConfirmed(row[11: ].tolist())
+                start = name.replace(" ", "")
+
+        i = -1
+
+        for index, row in self.deathsSeries.iterrows():
+
+            name = row['Province_State'].replace(" ", "")
+
+            if name == start:
+
+                self.states[i].addDeaths(row[12: ].tolist())
+
+            else:
+
+                i += 1
+                self.states[i].addDeaths(row[12: ].tolist())
+                start = name.replace(" ", "")
+
+    def prediction(self, days):
+
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        predictions = []
+        states = []
+        newRegions = []
+        chinaSum = []
+
+
+
 
     
