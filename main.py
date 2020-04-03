@@ -7,6 +7,8 @@ from dataset import CovidDataset, USDataset
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
+
+
 class Interface:
 
     def __init__(self):
@@ -29,7 +31,12 @@ class Interface:
 
         canvas3 = FigureCanvasTkAgg(dataset.worldDifferential(), root)
         canvas3.get_tk_widget().grid(column = 2, row = 1)
+
+        canvas4 = FigureCanvasTkAgg(usdataset.prediction(3), root)
+        canvas4.get_tk_widget().grid(column = 2, row = 2)
         
+        canvas5 = FigureCanvasTkAgg(usdataset.differential(5), root)
+        canvas5.get_tk_widget().grid(column = 3, row = 1)
 
         root.mainloop()
 

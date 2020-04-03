@@ -102,7 +102,9 @@ class CovidDataset:
         " recovered cases as of " + self.currentDate, fontsize = 10)
         return fig
 
-    def worldPrediction(self, days):
+    def worldPrediction(self, dayParam):
+
+        days = dayParam - 2
 
         plt.style.use('ggplot')
         fig = plt.figure()
@@ -139,7 +141,13 @@ class CovidDataset:
             str(days) + " days")
 
         ax.legend(loc = "upper left")
-        ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(days) + " Days")
+
+        if days == 1:
+            ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(dayParam) + " Day")
+
+        else:
+
+            ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(dayParam) + " Days")
         ax.set_xlim(left = 30)
         return fig
 
@@ -221,11 +229,31 @@ class USDataset: #US Time Series Data has a different structure
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
-        predictions = []
-        states = []
-        newRegions = []
-        chinaSum = []
+        return fig
 
+    def differential(self, days):
+
+        plt.style.use('ggplot')
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        for state in self.states:
+
+            if state.confirmedTotal[-1] > 5000:
+
+                filtered = savgol_filter(np.diff(state.confirmedTotal), 15,
+                2)
+                ax.plot(state.confirmedTotal[1: ], filtered,
+                label = state.name)
+        ax.legend(loc = "upper left")
+        ax.set_title("Logistic Trajectory: United States")
+        ax.set_xlabel("Total Cases (log)")
+        ax.set_ylabel("New Confirmed Cases (log)")
+        ax.set_yscale("log")
+        ax.set_xscale("log")
+        ax.set_xlim(left = 1000)
+        ax.set_ylim(bottom = 10)
+        return fig
 
 
 
