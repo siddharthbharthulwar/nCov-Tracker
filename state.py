@@ -30,4 +30,7 @@ class State: #US Time Series Data has a different structure
 
     def exponentialModel(self):
 
-        self.popt_exponential, self.pcov_exponential = 
+        self.popt_exponential, self.pcov_exponential = optimize.curve_fit(exponential, self.numList, 
+        self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)))
+
+        
