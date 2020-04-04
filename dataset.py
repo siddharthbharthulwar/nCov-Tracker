@@ -85,8 +85,9 @@ class CovidDataset:
     def currentWorldFigure(self):
 
         plt.style.use('ggplot')
-        fig = plt.figure()
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
         ax.plot(self.dateTime, self.totalConfirmed, label = "Total Cases: " + str(self.totalConfirmed[-1]))
         ax.plot(self.dateTime, self.totalDeaths, label = "Total Deaths: " + str(self.totalDeaths[-1]))
         ax.plot(self.dateTime, self.totalRecovered, label = "Total Recovered: " + str(self.totalRecovered[-1]))
@@ -97,7 +98,9 @@ class CovidDataset:
                 label.set_visible(False)
             index += 1
 
-        ax.legend(loc = "upper left")
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+            plt.setp(text, color = 'black')
         ax.set_title(str(self.totalConfirmed[-1]) + " cases, " + str(self.totalDeaths[-1]) + " deaths, and " + str(self.totalRecovered[-1]) + 
         " recovered cases as of " + self.currentDate, fontsize = 10)
         return fig
@@ -106,9 +109,9 @@ class CovidDataset:
 
         days = dayParam - 2
 
-        plt.style.use('ggplot')
-        fig = plt.figure()
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
 
         predictions = []
         countries = []
@@ -140,7 +143,9 @@ class CovidDataset:
             label = rgn.countryName + " with " + str(rgn.exponentialFinalPopulation) + " cases in " + 
             str(days) + " days")
 
-        ax.legend(loc = "upper left")
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+            plt.setp(text, color = 'black')
 
         if days == 1:
             ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(dayParam) + " Day")
@@ -153,9 +158,9 @@ class CovidDataset:
 
     def worldDifferential(self):
 
-        plt.style.use('ggplot')
-        fig = plt.figure()
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
 
         for region in self.regions:
 
@@ -164,14 +169,16 @@ class CovidDataset:
                 ax.plot(region.rowData[1: ], filtered, 
                 label = region.countryName)
 
-        ax.legend(loc = "upper left")
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+            plt.setp(text, color = 'black')
         ax.set_title("Logistic Trajectory of COVID-19")
         ax.set_xlabel("Total Cases (log)")
         ax.set_ylabel("New Confirmed Cases (log)")
         ax.set_yscale("log")
         ax.set_xscale("log")
         ax.set_xlim(left = 1000)
-        ax.set_ylim(bottom = 10)
+        ax.set_ylim(bottom = 100)
         return fig
         
 
@@ -225,17 +232,17 @@ class USDataset: #US Time Series Data has a different structure
 
     def prediction(self, days):
 
-        plt.style.use('ggplot')
-        fig = plt.figure()
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
 
         return fig
 
     def differential(self, days):
 
-        plt.style.use('ggplot')
-        fig = plt.figure()
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
 
         for state in self.states:
 
@@ -245,14 +252,16 @@ class USDataset: #US Time Series Data has a different structure
                 2)
                 ax.plot(state.confirmedTotal[1: ], filtered,
                 label = state.name)
-        ax.legend(loc = "upper left")
+        legend = ax.legend(loc = "upper left")
+        for text in legend.get_texts():
+            plt.setp(text, color = 'black')
         ax.set_title("Logistic Trajectory: United States")
         ax.set_xlabel("Total Cases (log)")
         ax.set_ylabel("New Confirmed Cases (log)")
         ax.set_yscale("log")
         ax.set_xscale("log")
         ax.set_xlim(left = 1000)
-        ax.set_ylim(bottom = 10)
+        ax.set_ylim(bottom = 100)
         return fig
 
 
