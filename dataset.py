@@ -230,14 +230,6 @@ class USDataset: #US Time Series Data has a different structure
                 self.states[i].addDeaths(row[12: ].tolist())
                 start = name.replace(" ", "")
 
-    def prediction(self, days):
-
-        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
-        ax = fig.add_subplot(1, 1, 1)
-        ax.set_facecolor((0.3, 0.3, 0.3))
-
-        return fig
-
     def differential(self, days):
 
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
@@ -263,6 +255,52 @@ class USDataset: #US Time Series Data has a different structure
         ax.set_xlim(left = 1000)
         ax.set_ylim(bottom = 100)
         return fig
+
+
+
+    def prediction(self, days):
+
+        plt.style.use('ggplot')
+        fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
+
+        predictions = []
+        states = []
+        newStates = []
+
+        for i in range(0, len(self.states)):
+
+            
+            state = self.states[i]
+            state.exponentialModel()
+
+            if state.rowData[-1] > 50:
+
+                newStates.append(state)
+                state.exponentialPrediction(days)
+                states.append(state.name)
+                predictions.append(state.exponentialFinalPopulation)
+        
+        newIndices = sorted(range(len(predictions)), key=lambda k: predictions[k])
+        newIndices.reverse()
+        newIndices = newIndices[:12]
+
+        for index in newIndices:
+
+            rgn = newStates[index]
+            ax.scatter(rgn.numList, rgn.rowData)
+            ax.plot(rgn.lins, rgn.vals, 
+            label = rgn.name + " with " + str(rgn.exponentialFinalPopulation) + " cases in " + str(days) + " days")
+
+
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+            plt.setp(text, color = 'black')
+        ax.set_title(str(sum(predictions)) + " Cases in the United States in " + str(days) + " Days")
+        ax.set_xlim(left = 30)
+        return fig
+
 
 
 

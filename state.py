@@ -29,8 +29,23 @@ class State: #US Time Series Data has a different structure
 
 
     def exponentialModel(self):
-
+        self.numList = range(0, len(self.confirmedTotal))
+        self.rowData = self.confirmedTotal
         self.popt_exponential, self.pcov_exponential = optimize.curve_fit(exponential, self.numList, 
         self.rowData, bounds = ((1e-05, 0, -15), (1, 5e-01, 15)))
 
-        
+        nums = range(0, len(self.rowData))
+        numVals = logistic(nums, self.popt_exponential[0], self.popt_exponential[1], self.popt_exponential[2])
+
+        self.r_squared_exponential = r2_score(self.rowData, numVals)
+
+    def exponentialPrediction(self, days):
+
+        self.lins = np.linspace(0, len(self.rowData) + days, 100)
+        self.vals = exponential(self.lins, self.popt_exponential[0],
+        self.popt_exponential[1], self.popt_exponential[2])
+
+        self.exponentialFinalPopulation = int(self.vals[-1])
+
+
+    
