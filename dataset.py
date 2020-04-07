@@ -6,13 +6,24 @@ from region import Region
 import numpy as np 
 from scipy.signal import savgol_filter
 from state import State
-
+from datetime import datetime, timedelta
 
 def datePadding(string):
     if (string[0] == '0'):
         return string[1: ]
     else:
         return string
+
+def predictionDatePadding(string):
+
+    if (string[0] == '0'):
+        
+        return string[1: ].replace(" ", "")
+        
+    else:
+
+        return string.replace(" ", "")
+
 
 class CovidDataset:  
     
@@ -38,11 +49,11 @@ class CovidDataset:
             
             self.confirmedSeries.sort_values(by=self.currentDate, ascending=False)
             self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
-            tempDates = self.dateTime.strftime('%m/%e/%y')
+            self.tempDates = self.dateTime.strftime('%m/%e/%y')
 
             self.dates = []
-            for i in range(len(tempDates)):
-                self.dates.append(datePadding(tempDates[i]).replace(" ", ""))
+            for i in range(len(self.tempDates)):
+                self.dates.append(datePadding(self.tempDates[i]).replace(" ", ""))
 
             self.totalConfirmed = []
             self.totalDeaths = []
@@ -180,18 +191,14 @@ class CovidDataset:
             ax.scatter(rgn.numList, rgn.rowData)
             ax.plot(rgn.lins, rgn.vals,  #TODO: change to actual values
             label = rgn.countryName + " with " + str(rgn.exponentialFinalPopulation) + " cases in " + 
-            str(days) + " days")
+            str(dayParam) + " days")
 
         leg = ax.legend(loc = "upper left")
         for text in leg.get_texts():
             plt.setp(text, color = 'black')
 
-        if days == 1:
-            ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(dayParam) + " Day")
-
-        else:
-
-            ax.set_title(str(sum(predictions) + chinaSum) + " Cases Worldwide in " + str(dayParam) + " Days")
+        date = self.dateTime[-1] + timedelta(days = dayParam)
+        ax.set_title(str(sum(predictions)) + " Cases Worldwide by " + predictionDatePadding(date.strftime('%m/%e/%y')))
         ax.set_xlim(left = 30)
         return fig
 
@@ -253,7 +260,7 @@ class CovidDataset:
 
             plt.setp(text, color = "black")
 
-        ax.set_title("Total Confirmed Cases, Deaths, and Recoveries in the United States")
+        ax.set_title("Total Confirmed Cases, Deaths, and Recoveries in the United States", fontsize = 10)
         return fig        
 
 class USDataset: #US Time Series Data has a different structure
@@ -272,6 +279,12 @@ class USDataset: #US Time Series Data has a different structure
         start = None
         i = -1
         self.states = []
+
+        self.currentDate = self.confirmedSeries.columns[-1]
+        self.firstDate = self.confirmedSeries.columns[11]
+
+        self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq = 'D')
+        self.tempDates = self.dateTime.strftime('%m/%e/%y')
 
         for index, row in self.confirmedSeries.iterrows():
 
@@ -373,7 +386,10 @@ class USDataset: #US Time Series Data has a different structure
         leg = ax.legend(loc = "upper left")
         for text in leg.get_texts():
             plt.setp(text, color = 'black')
-        ax.set_title(str(sum(predictions)) + " Cases in the United States in " + str(days) + " Days")
+        
+        date = self.dateTime[-1] + timedelta(days = days)
+
+        ax.set_title(str(sum(predictions)) + " Cases in the United States by " + predictionDatePadding(date.strftime('%m/%e/%y')))
         ax.set_xlim(left = 30)
         return fig
 

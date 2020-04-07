@@ -47,7 +47,7 @@ class Interface:
         self.canvas = FigureCanvasTkAgg(self.dataset.currentWorldFigure(), self.root)
         self.canvas.get_tk_widget().grid(column = 1, row = 1)
         
-        self.canvas2 = FigureCanvasTkAgg(self.dataset.currentCountriesFigure(), self.root)
+        self.canvas2 = FigureCanvasTkAgg(self.dataset.worldPrediction(3), self.root)
         self.canvas2.get_tk_widget().grid(column = 1, row = 2)
 
         self.canvas3 = FigureCanvasTkAgg(self.dataset.worldDifferential(), self.root)
