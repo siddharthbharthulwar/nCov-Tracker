@@ -84,7 +84,7 @@ class CovidDataset:
 
     def currentWorldFigure(self):
 
-        plt.style.use('ggplot')
+        plt.style.use('bmh')
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_facecolor((0.3, 0.3, 0.3))
@@ -105,6 +105,44 @@ class CovidDataset:
         " recovered cases as of " + self.currentDate, fontsize = 10)
         return fig
 
+    def currentCountriesFigure(self):
+
+        plt.style.use('bmh')
+        fig = plt.figure(facecolor= (0.17, 0.17, 0.17))
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
+
+        newRegions = []
+        countries = []
+        last = []
+
+        for i in range(0, len(self.regions)):
+
+            region = self.regions[i]
+            newRegions.append(region)
+            countries.append(region.countryName)
+            last.append(region.rowData[-1])
+
+        newIndices = sorted(range(len(last)), key=lambda k: last[k])
+        newIndices.reverse()
+        newIndices = newIndices[:12 ]
+
+        for index in newIndices:
+
+            rgn = newRegions[index]
+            ax.plot(rgn.numList, rgn.rowData,
+            label = rgn.countryName + " with " + str(rgn.rowData[-1]) + " cases on " + self.currentDate)
+
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+
+            plt.setp(text, color = "black")
+
+        ax.set_title("Worldwide Cases of COVID-19")
+        return fig
+
+        
+
     def worldPrediction(self, dayParam):
 
         days = dayParam - 2
@@ -112,6 +150,7 @@ class CovidDataset:
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_facecolor((0.3, 0.3, 0.3))
+        plt.style.use('bmh')
 
         predictions = []
         countries = []
@@ -157,7 +196,8 @@ class CovidDataset:
         return fig
 
     def worldDifferential(self):
-
+        
+        plt.style.use('bmh')
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_facecolor((0.3, 0.3, 0.3))
@@ -180,7 +220,41 @@ class CovidDataset:
         ax.set_xlim(left = 1000)
         ax.set_ylim(bottom = 100)
         return fig
-        
+
+    def currentUSFigure(self):
+
+        plt.style.use('bmh')
+        fig = plt.figure(facecolor = (0.17, 0.17, 0.17))
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_facecolor((0.3, 0.3, 0.3))
+
+        for region in self.regions:
+
+            if region.countryName == "US":
+
+                USRegion = region
+                break
+                
+        ax.plot(self.dateTime, USRegion.rowData, label = 
+        "Total Cases in US: " + str(region.rowData[-1]))
+        ax.plot(self.dateTime, USRegion.deaths[4: ], label = 
+        "Total Deaths in US: " + str(region.deaths[-1]))
+        ax.plot(self.dateTime, USRegion.recovered[4: ], label = 
+        "Total Recovered in US: " + str(region.recovered[-1]))
+
+        index = 0
+        for label in ax.xaxis.get_ticklabels():
+            if not index == 0 or not index == len(ax.xaxis.get_ticklabels()) - 1:
+                label.set_visible(False)
+            index += 1
+
+        leg = ax.legend(loc = "upper left")
+        for text in leg.get_texts():
+
+            plt.setp(text, color = "black")
+
+        ax.set_title("Total Confirmed Cases, Deaths, and Recoveries in the United States")
+        return fig        
 
 class USDataset: #US Time Series Data has a different structure
 
@@ -232,6 +306,8 @@ class USDataset: #US Time Series Data has a different structure
 
     def differential(self, days):
 
+
+        plt.style.use('bmh')
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_facecolor((0.3, 0.3, 0.3))
@@ -260,7 +336,7 @@ class USDataset: #US Time Series Data has a different structure
 
     def prediction(self, days):
 
-        plt.style.use('ggplot')
+        plt.style.use('bmh')
         fig = plt.figure(facecolor=(0.17, 0.17, 0.17))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_facecolor((0.3, 0.3, 0.3))
