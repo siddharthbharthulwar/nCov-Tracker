@@ -88,6 +88,7 @@ class CovidDataset:
 
             self.indices = sorted(range(len(finalValues)), key=lambda k: finalValues[k])
             self.indices.reverse()
+            self.highestInTheRoom(12)
 
         else:
 
@@ -250,6 +251,8 @@ class CovidDataset:
         "Total Recovered in US: " + str(region.recovered[-1]))
 
         index = 0
+        ax.set_xlabel("Days Since First Case")
+        ax.set_ylabel("Number of Confirmed Cases")
         for label in ax.xaxis.get_ticklabels():
             if not index == 0 or not index == len(ax.xaxis.get_ticklabels()) - 1:
                 label.set_visible(False)
@@ -261,7 +264,29 @@ class CovidDataset:
             plt.setp(text, color = "black")
 
         ax.set_title("Total Confirmed Cases, Deaths, and Recoveries in the United States", fontsize = 10)
-        return fig        
+        return fig       
+
+    def highestInTheRoom(self, num):
+
+        finalCases = []
+        for region in self.regions:
+
+            finalCases.append(region.rowData[-1])
+        
+
+        self.sortedIndices = sorted(range(len(finalCases)), key=lambda k: finalCases[k])
+        self.sortedIndices.reverse()
+        self.sortedIndices = self.sortedIndices[:num]
+        self.sortedRegions = []
+        self.sortedNames = []
+        
+        for i in self.sortedIndices:
+
+            self.sortedRegions.append(self.regions[i])
+            self.sortedNames.append(self.regions[i].countryName)
+
+
+
 
 class USDataset: #US Time Series Data has a different structure
 
@@ -391,6 +416,8 @@ class USDataset: #US Time Series Data has a different structure
 
         ax.set_title(str(sum(predictions)) + " Cases in the United States by " + predictionDatePadding(date.strftime('%m/%e/%y')))
         ax.set_xlim(left = 30)
+        ax.set_xlabel("Days Since First Case")
+        ax.set_ylabel("Confirmed Cases")
         return fig
 
 

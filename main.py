@@ -13,20 +13,37 @@ class Interface:
 
     def __init__(self):
 
-
         #INIT CONFIGURATION WINDOW
         self.splash = tk.Tk()
         self.dataset = CovidDataset()
-
+        self.usdataset = USDataset()
         self.splash.title("Configuration Settings")
         self.splash.geometry("300x200")
         self.splash.configure(bg = "grey17")
 
+        choicesDict = {}
+
+        for i in self.dataset.sortedNames:
+
+            choicesDict[i] = None
+        
+        tkVar = tk.StringVar(master = self.splash)
+        tkVar.set('US')
+        popupMenu = tk.OptionMenu(self.splash, tkVar, *choicesDict)
+        popupMenu.grid(column = 3, row = 2)
+
+        execute = tk.Button(self.splash, text = "Enter", command = self.load())
+        execute.grid(column = 3, row = 3)
+
         self.splash.mainloop()
+
+        #TODO: issue for when I fix this tomorrow:
+        #self.load() is called before self.splash.mainloop()
 
         #END CONFIGURATION WINDOW
 
-
+    def load(self):
+        print("donoz")
 
         COLOR = 'white'
         mpl.rcParams['text.color'] = COLOR
@@ -43,7 +60,6 @@ class Interface:
         self.root.state("zoomed")
         self.root.configure(bg = "grey17")
 
-        usdataset = USDataset()
         self.canvas = FigureCanvasTkAgg(self.dataset.currentWorldFigure(), self.root)
         self.canvas.get_tk_widget().grid(column = 1, row = 1)
         
@@ -53,10 +69,10 @@ class Interface:
         self.canvas3 = FigureCanvasTkAgg(self.dataset.worldDifferential(), self.root)
         self.canvas3.get_tk_widget().grid(column = 2, row = 1)
 
-        self.canvas4 = FigureCanvasTkAgg(usdataset.prediction(3), self.root)
+        self.canvas4 = FigureCanvasTkAgg(self.usdataset.prediction(3), self.root)
         self.canvas4.get_tk_widget().grid(column = 2, row = 2)
         
-        self.canvas5 = FigureCanvasTkAgg(usdataset.differential(5), self.root)
+        self.canvas5 = FigureCanvasTkAgg(self.usdataset.differential(5), self.root)
         self.canvas5.get_tk_widget().grid(column = 3, row = 1)
 
         self.canvas6 = FigureCanvasTkAgg(self.dataset.currentUSFigure(), self.root)
@@ -65,6 +81,8 @@ class Interface:
 
         ## show window again
         self.root.mainloop()
+
+
 
 
 
