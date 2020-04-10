@@ -22,28 +22,42 @@ class Interface:
         self.splash.configure(bg = "grey17")
 
         choicesDict = {}
+        usChoicesDict = {}
 
+        index = 0
         for i in self.dataset.sortedNames:
 
-            choicesDict[i] = None
+            choicesDict[i] = self.dataset.sortedRegions[index]
+            index +=1
         
+        choicesDict['Worldwide'] = None
         tkVar = tk.StringVar(master = self.splash)
-        tkVar.set('US')
+        tkVar.set('Worldwide')
+
+        index = 0
+        for i in self.usdataset.sortedNames:
+
+            usChoicesDict[i] = self.usdataset.sortedStates[index]
+            index +=1
+        
+        usVar = tk.StringVar(master = self.splash)
+        usVar.set('Colorado')
+
         popupMenu = tk.OptionMenu(self.splash, tkVar, *choicesDict)
         popupMenu.grid(column = 3, row = 2)
 
-        execute = tk.Button(self.splash, text = "Enter", command = self.load())
+        usPopupMenu = tk.OptionMenu(self.splash, usVar, *usChoicesDict)
+        usPopupMenu.grid(column = 3 , row = 4)
+
+        execute = tk.Button(self.splash, text = "Enter", command = lambda: self.load())
         execute.grid(column = 3, row = 3)
 
         self.splash.mainloop()
 
-        #TODO: issue for when I fix this tomorrow:
-        #self.load() is called before self.splash.mainloop()
-
         #END CONFIGURATION WINDOW
 
     def load(self):
-        print("donoz")
+        self.splash.destroy()
 
         COLOR = 'white'
         mpl.rcParams['text.color'] = COLOR

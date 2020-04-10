@@ -342,6 +342,7 @@ class USDataset: #US Time Series Data has a different structure
                 self.states[i].addDeaths(row[12: ].tolist())
                 start = name.replace(" ", "")
 
+        self.highestInTheRoom(12)
     def differential(self, days):
 
 
@@ -419,6 +420,25 @@ class USDataset: #US Time Series Data has a different structure
         ax.set_xlabel("Days Since First Case")
         ax.set_ylabel("Confirmed Cases")
         return fig
+
+    def highestInTheRoom(self, num):
+
+        finalCases = []
+        for state in self.states:
+
+            finalCases.append(state.confirmedTotal[-1])
+
+        self.sortedIndices = sorted(range(len(finalCases)), key = lambda k: finalCases[k])
+        self.sortedIndices.reverse()
+        self.sortedIndices = self.sortedIndices[: num]
+        self.sortedStates = []
+        self.sortedNames = []
+
+        for i in self.sortedIndices:
+
+            self.sortedStates.append(self.states[i])
+            self.sortedNames.append(self.states[i].name)
+
 
 
 
