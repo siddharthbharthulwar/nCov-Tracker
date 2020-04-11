@@ -7,6 +7,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from state import State
 from datetime import datetime, timedelta
+import sys
 
 def datePadding(string):
     if (string[0] == '0'):
@@ -47,7 +48,6 @@ class CovidDataset:
             self.currentDate = self.recoveredSeries.columns[-1]
             self.firstDate = self.recoveredSeries.columns[4]
             
-            self.confirmedSeries.sort_values(by=self.currentDate, ascending=False)
             self.dateTime = pd.date_range(start = self.firstDate, end = self.currentDate, freq ='D')
             self.tempDates = self.dateTime.strftime('%m/%e/%y')
 
@@ -93,6 +93,7 @@ class CovidDataset:
         else:
 
             print("ERROR: DATASETS ARE NOT ALIGNED")
+            sys.exit()
 
     def currentWorldFigure(self):
 
@@ -202,6 +203,11 @@ class CovidDataset:
         ax.set_title(str(sum(predictions)) + " Cases Worldwide by " + predictionDatePadding(date.strftime('%m/%e/%y')))
         ax.set_xlim(left = 30)
         return fig
+
+    def reportdate(self, days):
+
+        date = self.dateTime[-1] + timedelta(days = days)
+        return date.strftime('%m/%e/%y')
 
     def worldDifferential(self):
         
