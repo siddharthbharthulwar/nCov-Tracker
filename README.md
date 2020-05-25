@@ -12,9 +12,3 @@ Dependencies:
 - Matplotlib
 - Python 3.6 +
 - Tkinter (should be included within the base Python 3.xx package)
-
-TODO:
-- Fix Interface
-- Add Shifting Weight Tracking for better predictions
-- Train and implement LTSM Deep Learning Models for Dynamic Weights
-- Build to exe
